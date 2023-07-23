@@ -21,15 +21,22 @@ export class ProductService {
 	) {}
 
 	async getAll(dto: GetAllProductDto = {}) {
+		/**extract pagination data based on dto */
 		const { perPage, skip } = this.paginationService.getPagination(dto)
 
+		/**get filters based on dto */
 		const filters = this.createFilter(dto)
 
+		/**get products based on filters */
 		const products = await this.prisma.product.findMany({
+			/**applying filters */
 			where: filters,
+			/**get ask desc order */
 			orderBy: this.getSortOption(dto.sort),
 			skip,
+			/**how many products to return */
 			take: perPage,
+			/**select only certain fields  */
 			select: productReturnObject,
 		})
 
@@ -41,6 +48,7 @@ export class ProductService {
 		}
 	}
 
+	/**get AND propertie for search term, value is an array of configured filters  */
 	private createFilter(dto: GetAllProductDto): Prisma.ProductWhereInput {
 		const filters: Prisma.ProductWhereInput[] = []
 
@@ -80,6 +88,7 @@ export class ProductService {
 	}
 
 	private getSearchTermFilter(searchTerm: string): Prisma.ProductWhereInput {
+		/**return object that contains search term  */
 		return {
 			OR: [
 				{
@@ -122,8 +131,10 @@ export class ProductService {
 		minPrice?: number,
 		maxPrice?: number,
 	): Prisma.ProductWhereInput {
+		// Declare and initialize priceFilter as undefined
 		let priceFilter: Prisma.IntFilter | undefined = undefined
 
+		// If minPrice is provided, update priceFilter with gte property
 		if (minPrice) {
 			priceFilter = {
 				...priceFilter,
@@ -131,6 +142,7 @@ export class ProductService {
 			}
 		}
 
+		// If maxPrice is provided, update priceFilter with lte property
 		if (maxPrice) {
 			priceFilter = {
 				...priceFilter,
@@ -138,6 +150,7 @@ export class ProductService {
 			}
 		}
 
+		// Return an object with price property containing priceFilter
 		return {
 			price: priceFilter,
 		}
