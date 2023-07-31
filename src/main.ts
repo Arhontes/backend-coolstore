@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
 import { PrismaService } from './prisma.service'
 
+const port = process.env.PORT || 4200
+
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule)
 
@@ -10,7 +12,8 @@ async function bootstrap() {
 
 	app.setGlobalPrefix('api')
 	app.enableCors()
-	await app.listen('backend-coolstore.vercel.app')
+
+	await app.listen(port)
 }
 
 bootstrap()
