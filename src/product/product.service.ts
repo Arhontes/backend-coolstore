@@ -9,7 +9,7 @@ import { EnumProductSort, GetAllProductDto } from './dto/get-all.product.dto'
 import { ProductDto } from './dto/product.dto'
 import {
 	productReturnObject,
-	productReturnObjectFullest,
+	productReturnObjectFullest
 } from './return-product.object'
 
 @Injectable()
@@ -17,38 +17,30 @@ export class ProductService {
 	constructor(
 		private prisma: PrismaService,
 		private paginationService: PaginationService,
-		private categoryService: CategoryService,
+		private categoryService: CategoryService
 	) {}
 
 	async getAll(dto: GetAllProductDto = {}) {
-		/**extract pagination data based on dto */
 		const { perPage, skip } = this.paginationService.getPagination(dto)
 
-		/**get filters based on dto */
 		const filters = this.createFilter(dto)
 
-		/**get products based on filters */
 		const products = await this.prisma.product.findMany({
-			/**applying filters */
 			where: filters,
-			/**get ask desc order */
 			orderBy: this.getSortOption(dto.sort),
 			skip,
-			/**how many products to return */
 			take: perPage,
-			/**select only certain fields  */
-			select: productReturnObject,
+			select: productReturnObject
 		})
 
 		return {
 			products,
 			length: await this.prisma.product.count({
-				where: filters,
-			}),
+				where: filters
+			})
 		}
 	}
 
-	/**get AND propertie for search term, value is an array of configured filters  */
 	private createFilter(dto: GetAllProductDto): Prisma.ProductWhereInput {
 		const filters: Prisma.ProductWhereInput[] = []
 
@@ -56,15 +48,15 @@ export class ProductService {
 
 		if (dto.ratings)
 			filters.push(
-				this.getRatingFilter(dto.ratings.split('|').map(rating => +rating)),
+				this.getRatingFilter(dto.ratings.split('|').map(rating => +rating))
 			)
 
 		if (dto.minPrice || dto.maxPrice)
 			filters.push(
 				this.getPriceFilter(
 					convertToNumber(dto.minPrice),
-					convertToNumber(dto.maxPrice),
-				),
+					convertToNumber(dto.maxPrice)
+				)
 			)
 
 		if (dto.categoryId) filters.push(this.getCategoryFilter(+dto.categoryId))
@@ -73,7 +65,7 @@ export class ProductService {
 	}
 
 	private getSortOption(
-		sort: EnumProductSort,
+		sort: EnumProductSort
 	): Prisma.ProductOrderByWithRelationInput[] {
 		switch (sort) {
 			case EnumProductSort.LOW_PRICE:
@@ -88,30 +80,29 @@ export class ProductService {
 	}
 
 	private getSearchTermFilter(searchTerm: string): Prisma.ProductWhereInput {
-		/**return object that contains search term  */
 		return {
 			OR: [
 				{
 					category: {
 						name: {
 							contains: searchTerm,
-							mode: 'insensitive',
-						},
-					},
+							mode: 'insensitive'
+						}
+					}
 				},
 				{
 					name: {
 						contains: searchTerm,
-						mode: 'insensitive',
-					},
+						mode: 'insensitive'
+					}
 				},
 				{
 					description: {
 						contains: searchTerm,
-						mode: 'insensitive',
-					},
-				},
-			],
+						mode: 'insensitive'
+					}
+				}
+			]
 		}
 	}
 
@@ -120,54 +111,50 @@ export class ProductService {
 			reviews: {
 				some: {
 					rating: {
-						in: ratings,
-					},
-				},
-			},
+						in: ratings
+					}
+				}
+			}
 		}
 	}
 
 	private getPriceFilter(
 		minPrice?: number,
-		maxPrice?: number,
+		maxPrice?: number
 	): Prisma.ProductWhereInput {
-		// Declare and initialize priceFilter as undefined
 		let priceFilter: Prisma.IntFilter | undefined = undefined
 
-		// If minPrice is provided, update priceFilter with gte property
 		if (minPrice) {
 			priceFilter = {
 				...priceFilter,
-				gte: minPrice,
+				gte: minPrice
 			}
 		}
 
-		// If maxPrice is provided, update priceFilter with lte property
 		if (maxPrice) {
 			priceFilter = {
 				...priceFilter,
-				lte: maxPrice,
+				lte: maxPrice
 			}
 		}
 
-		// Return an object with price property containing priceFilter
 		return {
-			price: priceFilter,
+			price: priceFilter
 		}
 	}
 
 	private getCategoryFilter(categoryId: number): Prisma.ProductWhereInput {
 		return {
-			categoryId,
+			categoryId
 		}
 	}
 
 	async byId(id: number) {
 		const product = await this.prisma.product.findUnique({
 			where: {
-				id,
+				id
 			},
-			select: productReturnObjectFullest,
+			select: productReturnObjectFullest
 		})
 
 		if (!product) throw new NotFoundException('Product not found!')
@@ -177,9 +164,9 @@ export class ProductService {
 	async bySlug(slug: string) {
 		const product = await this.prisma.product.findUnique({
 			where: {
-				slug,
+				slug
 			},
-			select: productReturnObjectFullest,
+			select: productReturnObjectFullest
 		})
 
 		if (!product) throw new NotFoundException('Product not found!')
@@ -190,10 +177,10 @@ export class ProductService {
 		const products = await this.prisma.product.findMany({
 			where: {
 				category: {
-					slug: categorySlug,
-				},
+					slug: categorySlug
+				}
 			},
-			select: productReturnObjectFullest,
+			select: productReturnObjectFullest
 		})
 
 		if (!products) throw new NotFoundException('Products not found!')
@@ -209,16 +196,16 @@ export class ProductService {
 		const products = await this.prisma.product.findMany({
 			where: {
 				category: {
-					name: currentProduct.category.name,
+					name: currentProduct.category.name
 				},
 				NOT: {
-					id: currentProduct.id,
-				},
+					id: currentProduct.id
+				}
 			},
 			orderBy: {
-				createdAt: 'desc',
+				createdAt: 'desc'
 			},
-			select: productReturnObject,
+			select: productReturnObject
 		})
 
 		return products
@@ -230,8 +217,8 @@ export class ProductService {
 				description: '',
 				name: '',
 				price: 0,
-				slug: '',
-			},
+				slug: ''
+			}
 		})
 
 		return product.id
@@ -244,7 +231,7 @@ export class ProductService {
 
 		return this.prisma.product.update({
 			where: {
-				id,
+				id
 			},
 			data: {
 				description,
@@ -254,10 +241,10 @@ export class ProductService {
 				slug: generateSlug(name),
 				category: {
 					connect: {
-						id: categoryId,
-					},
-				},
-			},
+						id: categoryId
+					}
+				}
+			}
 		})
 	}
 

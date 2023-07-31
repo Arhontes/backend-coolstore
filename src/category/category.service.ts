@@ -11,9 +11,9 @@ export class CategoryService {
 	async byId(id: number) {
 		const category = await this.prisma.category.findUnique({
 			where: {
-				id,
+				id
 			},
-			select: returnCategoryObject,
+			select: returnCategoryObject
 		})
 
 		if (!category) {
@@ -26,9 +26,9 @@ export class CategoryService {
 	async bySlug(slug: string) {
 		const category = await this.prisma.category.findUnique({
 			where: {
-				slug,
+				slug
 			},
-			select: returnCategoryObject,
+			select: returnCategoryObject
 		})
 
 		if (!category) {
@@ -40,7 +40,7 @@ export class CategoryService {
 
 	async getAll() {
 		return this.prisma.category.findMany({
-			select: returnCategoryObject,
+			select: returnCategoryObject
 		})
 	}
 
@@ -48,28 +48,28 @@ export class CategoryService {
 		return this.prisma.category.create({
 			data: {
 				name: '',
-				slug: '',
-			},
+				slug: ''
+			}
 		})
 	}
 
 	async update(id: number, dto: CategoryDto) {
 		return this.prisma.category.update({
 			where: {
-				id,
+				id
 			},
 			data: {
 				name: dto.name,
-				slug: generateSlug(dto.name),
-			},
+				slug: generateSlug(dto.name)
+			}
 		})
 	}
 
 	async delete(id: number) {
 		return this.prisma.category.delete({
 			where: {
-				id,
-			},
+				id
+			}
 		})
 	}
 }

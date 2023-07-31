@@ -2,7 +2,7 @@ import {
 	CanActivate,
 	ExecutionContext,
 	ForbiddenException,
-	Injectable,
+	Injectable
 } from '@nestjs/common'
 import { User } from '@prisma/client'
 

@@ -7,12 +7,12 @@ import {
 	Patch,
 	Put,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common'
-import { UserService } from './user.service'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
 import { UserDto } from './user.dto'
+import { UserService } from './user.service'
 
 @Controller('users')
 export class UserController {
@@ -32,13 +32,12 @@ export class UserController {
 		return this.userService.updateProfile(id, dto)
 	}
 
-	/**toggle favorites by id */
 	@HttpCode(200)
 	@Auth()
 	@Patch('profile/favorites/:productId')
 	async toggleFavorite(
 		@CurrentUser('id') id: number,
-		@Param('productId') productId: string,
+		@Param('productId') productId: string
 	) {
 		return this.userService.toggleFavorite(id, +productId)
 	}

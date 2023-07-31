@@ -1,13 +1,13 @@
 import {
 	BadRequestException,
 	Injectable,
-	NotFoundException,
+	NotFoundException
 } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
+import { hash } from 'argon2'
 import { PrismaService } from 'src/prisma.service'
 import { returnUserObject } from './return-user.object'
 import { UserDto } from './user.dto'
-import { hash } from 'argon2'
 
 @Injectable()
 export class UserService {
@@ -16,7 +16,7 @@ export class UserService {
 	async byId(id: number, selectObject: Prisma.UserSelect = {}) {
 		const user = await this.prisma.user.findUnique({
 			where: {
-				id,
+				id
 			},
 			select: {
 				...returnUserObject,
@@ -29,14 +29,14 @@ export class UserService {
 						slug: true,
 						category: {
 							select: {
-								slug: true,
-							},
+								slug: true
+							}
 						},
-						reviews: true,
-					},
+						reviews: true
+					}
 				},
-				...selectObject,
-			},
+				...selectObject
+			}
 		})
 
 		if (!user) {
@@ -48,7 +48,7 @@ export class UserService {
 
 	async updateProfile(id: number, dto: UserDto) {
 		const isSameUser = await this.prisma.user.findUnique({
-			where: { email: dto.email },
+			where: { email: dto.email }
 		})
 
 		if (isSameUser && id !== isSameUser.id)
@@ -58,15 +58,15 @@ export class UserService {
 
 		return this.prisma.user.update({
 			where: {
-				id,
+				id
 			},
 			data: {
 				email: dto.email,
 				name: dto.name,
 				avatarPath: dto.avatarPath,
 				phone: dto.phone,
-				password: dto.password ? await hash(dto.password) : user.password,
-			},
+				password: dto.password ? await hash(dto.password) : user.password
+			}
 		})
 	}
 
@@ -79,15 +79,15 @@ export class UserService {
 
 		await this.prisma.user.update({
 			where: {
-				id: user.id,
+				id: user.id
 			},
 			data: {
 				favorites: {
 					[isExists ? 'disconnect' : 'connect']: {
-						id: productId,
-					},
-				},
-			},
+						id: productId
+					}
+				}
+			}
 		})
 
 		return { message: 'Success' }

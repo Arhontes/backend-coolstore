@@ -8,15 +8,15 @@ import { ReviewDto } from './review.dto'
 export class ReviewService {
 	constructor(
 		private prisma: PrismaService,
-		private productService: ProductService,
+		private productService: ProductService
 	) {}
 
 	async getAll() {
 		return this.prisma.review.findMany({
 			orderBy: {
-				createdAt: 'desc',
+				createdAt: 'desc'
 			},
-			select: returnReviewObject,
+			select: returnReviewObject
 		})
 	}
 
@@ -28,15 +28,15 @@ export class ReviewService {
 				...dto,
 				product: {
 					connect: {
-						id: productId,
-					},
+						id: productId
+					}
 				},
 				user: {
 					connect: {
-						id: userId,
-					},
-				},
-			},
+						id: userId
+					}
+				}
+			}
 		})
 	}
 
@@ -44,7 +44,7 @@ export class ReviewService {
 		return this.prisma.review
 			.aggregate({
 				where: { productId },
-				_avg: { rating: true },
+				_avg: { rating: true }
 			})
 			.then(data => data._avg)
 	}

@@ -7,5 +7,5 @@ export const Auth = (role: TypeRole = 'user') =>
 	applyDecorators(
 		role === 'admin'
 			? UseGuards(JwtAuthGuard, OnlyAdminGuard)
-			: UseGuards(JwtAuthGuard),
+			: UseGuards(JwtAuthGuard)
 	)

@@ -8,7 +8,7 @@ import {
 	Post,
 	Put,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CategoryDto } from './category.dto'
@@ -35,8 +35,7 @@ export class CategoryController {
 	}
 
 	@HttpCode(200)
-	// @Auth('admin')
-	@Auth()
+	@Auth('admin')
 	@Post()
 	async create() {
 		return this.categoryService.create()
@@ -44,16 +43,14 @@ export class CategoryController {
 
 	@UsePipes(new ValidationPipe())
 	@HttpCode(200)
-	// @Auth('admin')
-	@Auth()
+	@Auth('admin')
 	@Put(':id')
 	async update(@Param('id') id: string, @Body() dto: CategoryDto) {
 		return this.categoryService.update(+id, dto)
 	}
 
 	@HttpCode(200)
-	// @Auth('admin')
-	@Auth()
+	@Auth('admin')
 	@Delete(':id')
 	async delete(@Param('id') id: string) {
 		return this.categoryService.delete(+id)

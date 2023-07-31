@@ -6,7 +6,7 @@ import {
 	Param,
 	Post,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common'
 import { Auth } from 'src/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/auth/decorators/user.decorator'
@@ -19,8 +19,7 @@ export class ReviewController {
 
 	@UsePipes(new ValidationPipe())
 	@Get()
-	// @Auth('admin')
-	@Auth()
+	@Auth('admin')
 	async getAll() {
 		return this.reviewService.getAll()
 	}
@@ -32,7 +31,7 @@ export class ReviewController {
 	async leaveReview(
 		@CurrentUser('id') id: number,
 		@Body() dto: ReviewDto,
-		@Param('productId') productId: string,
+		@Param('productId') productId: string
 	) {
 		return this.reviewService.create(id, dto, +productId)
 	}
